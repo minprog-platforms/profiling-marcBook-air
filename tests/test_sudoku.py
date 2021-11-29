@@ -59,28 +59,28 @@ def sudoku1_solved():
 
 
 def test_value_at(sudoku1):
-    assert sudoku1.value_at(0, 0) == 7
-    assert sudoku1.value_at(0, 2) == 8
-    assert sudoku1.value_at(8, 8) == 4
-    assert sudoku1.value_at(5, 3) == 5
+    assert sudoku1._grid[0][0] == 7
+    assert sudoku1._grid[2][0] == 8
+    assert sudoku1._grid[8][8] == 4
+    assert sudoku1._grid[3][5] == 5
 
 
 def test_row_values(sudoku1):
-    assert list(sorted(sudoku1.row_values(0))) == [0, 0, 0, 0, 0, 1, 3, 7, 9]
-    assert list(sorted(sudoku1.row_values(3))) == [0, 0, 0, 0, 0, 0, 0, 2, 5]
-    assert list(sorted(sudoku1.row_values(8))) == [0, 0, 0, 0, 0, 0, 4, 5, 9]
+    assert list(sorted(sudoku1._dict_rows[0])) == [0, 0, 0, 0, 0, 1, 3, 7, 9]
+    assert list(sorted(sudoku1._dict_rows[3])) == [0, 0, 0, 0, 0, 0, 0, 2, 5]
+    assert list(sorted(sudoku1._dict_rows[8])) == [0, 0, 0, 0, 0, 0, 4, 5, 9]
 
 
 def test_column_values(sudoku1):
-    assert list(sorted(sudoku1.column_values(0))) == [0, 0, 0, 0, 0, 4, 6, 7, 8]
-    assert list(sorted(sudoku1.column_values(3))) == [0, 0, 0, 0, 0, 0, 3, 4, 7]
-    assert list(sorted(sudoku1.column_values(8))) == [0, 0, 0, 0, 1, 2, 4, 6, 8]
+    assert list(sorted(sudoku1._dict_columns[0])) == [0, 0, 0, 0, 0, 4, 6, 7, 8]
+    assert list(sorted(sudoku1._dict_columns[3])) == [0, 0, 0, 0, 0, 0, 3, 4, 7]
+    assert list(sorted(sudoku1._dict_columns[8])) == [0, 0, 0, 0, 1, 2, 4, 6, 8]
 
 
 def test_block_values(sudoku1):
-    assert list(sorted(sudoku1.block_values(0))) == [0, 0, 0, 0, 0, 0, 7, 8, 9]
-    assert list(sorted(sudoku1.block_values(3))) == [0, 0, 0, 0, 0, 0, 0, 4, 5]
-    assert list(sorted(sudoku1.block_values(8))) == [0, 0, 0, 0, 0, 0, 4, 5, 8]
+    assert list(sorted(sudoku1._dict_blocks[0])) == [0, 0, 0, 0, 0, 0, 7, 8, 9]
+    assert list(sorted(sudoku1._dict_blocks[3])) == [0, 0, 0, 0, 0, 0, 0, 4, 5]
+    assert list(sorted(sudoku1._dict_blocks[8])) == [0, 0, 0, 0, 0, 0, 4, 5, 8]
 
 
 def test_is_solved(sudoku1, sudoku2, sudoku1_solved):
@@ -96,15 +96,15 @@ def test_next_empty_index(sudoku1, sudoku2, sudoku1_solved):
 
 
 def test_place(sudoku1):
-    assert sudoku1.value_at(2, 0) == 0
+    assert sudoku1._grid[0][2] == 0
     sudoku1.place(3, 2, 0)
-    assert sudoku1.value_at(2, 0) == 3
+    assert sudoku1._grid[0][2] == 3
 
 
 def test_unplace(sudoku1):
-    assert sudoku1.value_at(1, 0) == 9
+    assert sudoku1._grid[0][1] == 9
     sudoku1.unplace(1, 0)
-    assert sudoku1.value_at(1, 0) == 0
+    assert sudoku1._grid[0][1] == 0
 
 
 def test_options_at(sudoku1):

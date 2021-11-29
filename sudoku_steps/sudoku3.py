@@ -15,26 +15,19 @@ class Sudoku:
         self.load_row_columns()
         self.load_blocks()
 
-    def load_grid(self, puzzle: Iterable[Iterable]) -> None:
-        """Make a list in list format form the sting in list format"""
+    def load_grid(self, puzzle: Iterable[Iterable]):
         for puzzle_row in puzzle:
             row = [int(x) for x in puzzle_row]
             self._grid.append(row)
 
     def load_row_columns(self) -> None:
-        """Loading the row and column dictionaries and the empty value list"""
         for y in range(9):
             for x in range(9):
-                value = self._grid[y][x]
-
-                # append row values to row
+                value = self.value_at(x, y)
                 self._dict_rows[y].append(value)
-
-                # append column value to column
                 self._dict_columns[x].append(value)
 
     def load_blocks(self) -> None:
-        """Make a list of all the blocks and put these lists in a dictionary"""
         for i in range(9):
             x_start = (i // 3) * 3
             y_start = (i % 3) * 3
@@ -45,16 +38,10 @@ class Sudoku:
 
     def place(self, value: int, x: int, y: int) -> None:
         """Place value at x,y."""
-        # update grid
         self._grid[y][x] = value
-
-        # update row-dictionary
         self._dict_rows[y][x] = value
-
-        # update column-dictionary
         self._dict_columns[x][y] = value
 
-        # update block-dictionary
         block = (y // 3) * 3 + x // 3
         index = (x % 3) * (y % 3) + (x % 3) + (y % 3)
         self._dict_blocks[block][index] = value
@@ -63,25 +50,68 @@ class Sudoku:
         """Remove (unplace) a number at x,y."""
         self.place(0, x, y)
 
+    def value_at(self, x: int, y: int) -> int:
+        """Returns the value at x,y."""
+        try:
+            return self._grid[y][x]
+        except IndexError:
+            return -1
+
     def options_at(self, x: int, y: int) -> Iterable[int]:
         """Returns all possible values (options) at x,y."""
-        values = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-        block = (y // 3) * 3 + x // 3
-        used = set(self._dict_blocks[block]) | set(self._dict_rows[y]) | set(self._dict_columns[x])
+        options = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-        return [x for x in values if x not in used]
+        # Remove all values from the row
+        for value in self.row_values(y):
+            if value in options:
+                options.remove(value)
+
+        # Remove all values from the column
+        for value in self.column_values(x):
+            if value in options:
+                options.remove(value)
+
+        # Get the index of the block based from x,y
+        block_index = (y // 3) * 3 + x // 3
+
+        # Remove all values from the block
+        for value in self.block_values(block_index):
+            if value in options:
+                options.remove(value)
+
+        return options
 
     def next_empty_index(self) -> tuple[int, int]:
         """
         Returns the next index (x,y) that is empty (value 0).
         If there is no empty spot, returns (-1,-1)
         """
+        next_x, next_y = -1, -1
+
         for y in range(9):
             for x in range(9):
-                if self._grid[y][x] == 0:
-                    return(x, y)
+                if self.value_at(x, y) == 0 and next_x == -1 and next_y == -1:
+                    next_x, next_y = x, y
 
-        return (-1, -1)
+        return next_x, next_y
+
+    def row_values(self, i: int) -> Iterable[int]:
+        """Returns all values at i-th row."""
+        return self._dict_rows[i]
+
+    def column_values(self, i: int) -> Iterable[int]:
+        """Returns all values at i-th column."""
+        return self._dict_columns[i]
+
+    def block_values(self, i: int) -> Iterable[int]:
+        """
+        Returns all values at i-th block.
+        The blocks are arranged as follows:
+        0 1 2
+        3 4 5
+        6 7 8
+        """
+        return self._dict_blocks[i]
 
     def is_solved(self) -> bool:
         """
@@ -91,13 +121,11 @@ class Sudoku:
         values = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 
         for i in range(9):
-            if set(self._dict_rows[i]) != values:
+            if set(self.column_values(i)) != values:
                 return False
-
-            if set(self._dict_columns[i]) != values:
+            if set(self.row_values(i)) != values:
                 return False
-
-            if set(self._dict_blocks[i]) != values:
+            if set(self.block_values(i)) != values:
                 return False
 
         return True

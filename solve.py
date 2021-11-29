@@ -20,9 +20,11 @@ def solve(sudoku: Sudoku) -> Union[Sudoku, None]:
     # Otherwise, find an empty spot
     x, y = sudoku.next_empty_index()
 
+    if x == -1 and y == -1 and sudoku.is_solved:
+        return sudoku
+
     # For each possible option at the empty spot
     for option in sudoku.options_at(x, y):
-
         # Place that option in the sudoku
         sudoku.place(option, x, y)
 
